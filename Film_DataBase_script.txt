@@ -1,0 +1,241 @@
+ CREATE TABLE Rating_Producer(
+       ID serial  PRIMARY KEY,
+       Name varchar (100) UNIQUE
+	   ); 
+ INSERT INTO Rating_Producer VALUES (DEFAULT, 'КиноПоиск');
+ INSERT INTO Rating_Producer VALUES (DEFAULT, 'GidOnline');
+ INSERT INTO Rating_Producer VALUES (DEFAULT, 'IMDb');
+ INSERT INTO Rating_Producer VALUES (DEFAULT, 'Hdrezka');
+ INSERT INTO Rating_Producer VALUES (DEFAULT, 'Zfilm-hd');
+ INSERT INTO Rating_Producer VALUES (DEFAULT, 'По мнению Сиркина Тимура');
+ INSERT INTO Rating_Producer VALUES (DEFAULT, 'По мнению Морозова Артема');
+ INSERT INTO Rating_Producer VALUES (DEFAULT, 'По мнению Астрального духа');
+ INSERT INTO Rating_Producer VALUES (DEFAULT, 'По мнению из космоса');
+
+ CREATE TABLE Countries(
+      ID serial  PRIMARY KEY,
+      Name varchar (100)  UNIQUE
+      );
+ INSERT INTO Countries VALUES (DEFAULT, 'Россия');
+ INSERT INTO Countries VALUES (DEFAULT, 'США');
+ INSERT INTO Countries VALUES (DEFAULT, 'Украина');
+ INSERT INTO Countries VALUES (DEFAULT, 'Италия');
+ INSERT INTO Countries VALUES (DEFAULT, 'Франция');
+ INSERT INTO Countries VALUES (DEFAULT, 'Норвегия');
+ INSERT INTO Countries VALUES (DEFAULT, 'Англия');
+ INSERT INTO Countries VALUES (DEFAULT, 'Индия');
+ INSERT INTO Countries VALUES (DEFAULT, 'Япония');
+          
+ CREATE TABLE Studios(
+      ID serial  PRIMARY KEY,
+      Name varchar (100) NOT NULL,
+      Date_of_Create date,
+      Country_ID int REFERENCES Countries,
+	  CONSTRAINT Studios_Date_of_Create_ck CHECK (Date_of_Create >= '1895-12-28')
+      );
+ INSERT INTO Studios VALUES (DEFAULT, 'Castle Rock Entertainment', '1987-05-20', 2);
+ INSERT INTO Studios VALUES (DEFAULT, 'Warner Brothers', '1909-01-31', 2);
+ INSERT INTO Studios VALUES (DEFAULT, 'Lipnik studio', '2007-05-16', 3);
+ INSERT INTO Studios VALUES (DEFAULT, 'Русский стандрат', '1999-06-21', 4);
+ INSERT INTO Studios VALUES (DEFAULT, 'Липкий Джимми', '1946-08-12', 5);
+ INSERT INTO Studios VALUES (DEFAULT, 'Очень Липкий Джимми', '2010-10-05', 6);
+ INSERT INTO Studios VALUES (DEFAULT, 'Shalala land', '1979-11-19', 7);
+ INSERT INTO Studios VALUES (DEFAULT, 'О МОЙ БОГ', '2015-09-22', 8);
+ INSERT INTO Studios VALUES (DEFAULT, 'Real talk', '2017-02-02', 9);
+
+ CREATE TABLE Persons (
+      ID serial PRIMARY KEY,
+      Name varchar (100)  NOT NULL,
+      Surname varchar (100),
+      Sex boolean,
+      Birthdate date,
+      Country_ID int REFERENCES Countries,
+	  CONSTRAINT Persons_Birthdate_ck CHECK (Birthdate >= '1795-12-28')
+      );
+ INSERT INTO Persons VALUES (DEFAULT, 'Ник', 'Марвин', FALSE, '1964-03-25', 2);
+ INSERT INTO Persons VALUES (DEFAULT, 'Фрэнк', 'Дарабонт', TRUE, '1959-02-28', 2);
+ INSERT INTO Persons VALUES (DEFAULT, 'Тимур', 'Сиркин', TRUE, '1945-02-22', 5);
+ INSERT INTO Persons VALUES (DEFAULT, 'Владимир', 'Путин', TRUE, '1923-03-01', 4);
+ INSERT INTO Persons VALUES (DEFAULT, 'Галиябану', 'Бакирова', FALSE, '1999-01-31', 1);
+ INSERT INTO Persons VALUES (DEFAULT, 'Артемий', 'Морозов', TRUE, '1957-11-21', 1);
+ INSERT INTO Persons VALUES (DEFAULT, 'Сергей', 'Безруков', TRUE, '1979-12-01', 1);
+ INSERT INTO Persons VALUES (DEFAULT, 'Алексей', 'Бодров', TRUE, '1908-02-26', 1);
+ INSERT INTO Persons VALUES (DEFAULT, 'Лидия', 'Улидия', FALSE, '1972-12-01', 9);
+ INSERT INTO Persons VALUES (DEFAULT, 'Боб', 'Марлей', TRUE, '1978-05-05', 5);
+ INSERT INTO Persons VALUES (DEFAULT, 'Ким - чен', 'Чен - ким', TRUE, '1989-11-16', 8);
+ INSERT INTO Persons VALUES (DEFAULT, 'Батя', 'Батькович', TRUE, '2001-01-31', 1);
+ INSERT INTO Persons VALUES (DEFAULT, 'Джон', 'Джонсон', TRUE, '1945-01-31', 6);
+ INSERT INTO Persons VALUES (DEFAULT, 'НеДжон', 'НеДжонсон', TRUE, '1974-02-28', 1);
+ INSERT INTO Persons VALUES (DEFAULT, 'Румит', 'Уразмуривей', TRUE, '1988-11-11', 2);
+ INSERT INTO Persons VALUES (DEFAULT, 'Рики', 'Мару', TRUE, '1929-10-31', 2);
+ INSERT INTO Persons VALUES (DEFAULT, 'Бара', 'Трум', TRUE, '1941-09-13', 2);
+ INSERT INTO Persons VALUES (DEFAULT, 'Кристал', 'Мэйдэн', FALSE, '2006-08-31', 1);
+ INSERT INTO Persons VALUES (DEFAULT, 'Лен', 'Клен', TRUE, '2004-07-31', 8);
+ INSERT INTO Persons VALUES (DEFAULT, 'Бас', 'Дас', TRUE, '1989-06-17', 7);
+ INSERT INTO Persons VALUES (DEFAULT, 'НенеДжон', 'НенеДжонсон', TRUE, '1969-05-03', 6);
+ INSERT INTO Persons VALUES (DEFAULT, 'Кумит', 'Азмуривей', TRUE, '1964-01-02', 5);
+ INSERT INTO Persons VALUES (DEFAULT, 'Рикимару', 'Марурики', TRUE, '1980-02-08', 4);
+ INSERT INTO Persons VALUES (DEFAULT, 'Баратрум', 'Жабиев', TRUE, '1981-03-10', 3);
+ INSERT INTO Persons VALUES (DEFAULT, 'Лина', 'Фаер', FALSE, '1988-04-22', 1);
+ 
+ CREATE TABLE Films (
+      ID serial PRIMARY KEY ,
+      Name varchar (100) NOT NULL,
+      Premiere_Date date,
+      Producer_ID int REFERENCES Persons,
+      Rental real,
+      Duration time without time zone,
+      Country_ID int REFERENCES Countries,
+      Budget real,
+      Age_Limit int,
+      Director_ID int REFERENCES Persons,
+      Studio_ID int REFERENCES Studios,
+	  CONSTRAINT Films_Age_Limit_ck CHECK (Age_Limit >= 0 AND Age_Limit <= 18),
+	  CONSTRAINT Films_Premiere_ck_Date CHECK (Premiere_Date >= '1895-12-28'),
+	  CONSTRAINT Films_Rental_ck CHECK (Rental >= 0),
+	  CONSTRAINT Films_Budget_ck CHECK (Budget >= 0)
+	);
+ INSERT INTO Films VALUES (DEFAULT, 'Побег из Шоушенка', '1994-09-10', 1, 59841312, '02:02:00', 2, 1123123, 16, 2, 1 );
+ INSERT INTO Films VALUES (DEFAULT, 'Игра Престолов', '2010-09-10', 4, 19841312, '01:01:00', 2, 1123123, 0, 1, 9 );
+ INSERT INTO Films VALUES (DEFAULT, 'Хищник', '1994-12-11', 5, 29841312, '03:00:00', 5, 1123123, 6, 3, 8 );
+ INSERT INTO Films VALUES (DEFAULT, 'Хищник 2', '1996-11-10', 2, 9841312, '02:32:00', 2, 1123123, 12, 4, 7 );
+ INSERT INTO Films VALUES (DEFAULT, 'Операция Ы', '1985-10-12', 8, 61312, '02:42:00', 1, 1123123, 16, 5, 9 );
+ INSERT INTO Films VALUES (DEFAULT, 'Годовщина', '1994-09-13', 10, 3221412, '01:02:00', 2, 1123123, 18, 6, 8 );
+ INSERT INTO Films VALUES (DEFAULT, 'Спасти рядового Райна', '2005-08-10', 9, 2281312, '02:02:00', 2, 1123123, 16, 7, 1 );
+ INSERT INTO Films VALUES (DEFAULT, 'Мальчишник', '2009-07-14', 1, 413256, '01:40:00', 2, 1123123, 18, 8, 7 );
+ INSERT INTO Films VALUES (DEFAULT, 'Е бой', '1928-06-15', 3, 522876, '01:36:00', 8, 1123123, 18, 9, 6 );
+ INSERT INTO Films VALUES (DEFAULT, 'Версус', '2015-05-16', 4, 12345, '01:17:00', 6, 1123123, 16, 2, 5 );
+ INSERT INTO Films VALUES (DEFAULT, 'Слово СПБ', '2017-04-17', 5, 123456, '02:15:00', 2, 1123123, 0, 2, 4 );
+ INSERT INTO Films VALUES (DEFAULT, 'РБЛ', '1991-03-18', 6, 541312, '02:06:00', 2, 1123123, 0, 1, 1 );
+ INSERT INTO Films VALUES (DEFAULT, 'Дизастер', '2016-02-22', 7, 982312, '01:56:00', 2, 1123123, 3, 2, 3 );
+ INSERT INTO Films VALUES (DEFAULT, 'Рэмпэйдж', '2006-01-30', 8, 1441312, '01:43:00', 2, 1123123, 18, 4, 2 );
+ INSERT INTO Films VALUES (DEFAULT, 'Побег из курятника', '1994-09-10', 1, 14881312, '01:52:00', 1, 1123123, 18, 5, 1 );
+          
+ CREATE TABLE  Genres(
+      ID serial  PRIMARY KEY,
+      Name varchar (100)  UNIQUE
+      );
+ INSERT INTO Genres VALUES (DEFAULT, 'Комедия');
+ INSERT INTO Genres VALUES (DEFAULT, 'Драма');
+ INSERT INTO Genres VALUES (DEFAULT, 'Триллер');
+ INSERT INTO Genres VALUES (DEFAULT, 'Ужасы');
+ INSERT INTO Genres VALUES (DEFAULT, 'Мелодрама');
+ INSERT INTO Genres VALUES (DEFAULT, 'Боевик');
+ INSERT INTO Genres VALUES (DEFAULT, 'Сказка');
+ INSERT INTO Genres VALUES (DEFAULT, 'Детектив');
+ INSERT INTO Genres VALUES (DEFAULT, 'Фантастика');
+            
+ CREATE TABLE Films_Genres (
+      Genre_ID int REFERENCES Films,
+      Film_ID int REFERENCES Genres,
+	  CONSTRAINT Genres_Genre_ID_Films_ID_uq UNIQUE(Genre_ID, Film_ID)
+      );
+              
+ INSERT INTO Films_Genres VALUES (1, 1);
+ INSERT INTO Films_Genres VALUES (2, 2);
+ INSERT INTO Films_Genres VALUES (3, 3);
+ INSERT INTO Films_Genres VALUES (4, 4);
+ INSERT INTO Films_Genres VALUES (5, 5);
+ INSERT INTO Films_Genres VALUES (6, 6);
+ INSERT INTO Films_Genres VALUES (7, 7);
+ INSERT INTO Films_Genres VALUES (8, 8);
+ INSERT INTO Films_Genres VALUES (9, 9);
+ INSERT INTO Films_Genres VALUES (2, 3);
+ INSERT INTO Films_Genres VALUES (3, 4);
+ INSERT INTO Films_Genres VALUES (4, 5);
+ INSERT INTO Films_Genres VALUES (5, 6);
+ INSERT INTO Films_Genres VALUES (6, 7);
+ INSERT INTO Films_Genres VALUES (7, 9);
+ INSERT INTO Films_Genres VALUES (6, 1);
+ INSERT INTO Films_Genres VALUES (5, 2);
+ INSERT INTO Films_Genres VALUES (7, 3);
+ INSERT INTO Films_Genres VALUES (8, 4);
+ INSERT INTO Films_Genres VALUES (9, 5);
+ INSERT INTO Films_Genres VALUES (3, 6);
+ INSERT INTO Films_Genres VALUES (4, 7);
+
+CREATE TABLE Films_Ratings(
+      Film_ID int REFERENCES Films,
+      Rating_Producer_ID int REFERENCES Rating_Producer,
+      Rating real NOT NULL,
+	  CONSTRAINT Films_Ratings_Rating_Producer_ID_Films_ID_uq UNIQUE(Rating_Producer_ID, Film_ID),
+	  CONSTRAINT Fims_Ratings_Rating_ck CHECK (Rating >=0 AND Rating <= 10)
+      );
+INSERT INTO Films_Ratings VALUES (1, 9, 9.3);  
+INSERT INTO Films_Ratings VALUES (2, 2, 8.1); 
+INSERT INTO Films_Ratings VALUES (3, 3, 7.2); 
+INSERT INTO Films_Ratings VALUES (4, 1, 6.3); 
+INSERT INTO Films_Ratings VALUES (5, 1, 5.4); 
+INSERT INTO Films_Ratings VALUES (6, 4, 4.3); 
+INSERT INTO Films_Ratings VALUES (7, 1, 1.5); 
+INSERT INTO Films_Ratings VALUES (8, 1, 2.6); 
+INSERT INTO Films_Ratings VALUES (9, 1, 3.7); 
+INSERT INTO Films_Ratings VALUES (10, 2, 4.8); 
+INSERT INTO Films_Ratings VALUES (11, 3, 9.9); 
+INSERT INTO Films_Ratings VALUES (12, 1, 5.0); 
+INSERT INTO Films_Ratings VALUES (13, 1, 6.1); 
+INSERT INTO Films_Ratings VALUES (14, 2, 9.2); 
+INSERT INTO Films_Ratings VALUES (15, 3, 0.3); 
+INSERT INTO Films_Ratings VALUES (8, 4, 9.4); 
+INSERT INTO Films_Ratings VALUES (9, 3, 9.5); 
+INSERT INTO Films_Ratings VALUES (1, 1, 9.6); 
+INSERT INTO Films_Ratings VALUES (5, 9, 7.7); 
+INSERT INTO Films_Ratings VALUES (8, 8, 9.8); 
+INSERT INTO Films_Ratings VALUES (9, 7, 8.9); 
+INSERT INTO Films_Ratings VALUES (1, 6, 6.0); 
+INSERT INTO Films_Ratings VALUES (1, 5, 9.1); 
+INSERT INTO Films_Ratings VALUES (8, 9, 5.2); 
+INSERT INTO Films_Ratings VALUES (9, 5, 8.3); 
+INSERT INTO Films_Ratings VALUES (1, 2, 7.4); 
+INSERT INTO Films_Ratings VALUES (12, 8, 6.5); 
+           
+CREATE TABLE Films_Actors(
+      Film_ID bigint REFERENCES Films,
+      Actor_ID bigint REFERENCES Persons,
+	  CONSTRAINT Films_Actors_Actor_ID_Films_ID_uq UNIQUE(Actor_ID, Film_ID)
+      );
+ INSERT INTO Films_Actors VALUES (1, 1);
+ INSERT INTO Films_Actors VALUES (2, 2);
+ INSERT INTO Films_Actors VALUES (3, 3);
+ INSERT INTO Films_Actors VALUES (4, 4);
+ INSERT INTO Films_Actors VALUES (5, 5);
+ INSERT INTO Films_Actors VALUES (6, 6);
+ INSERT INTO Films_Actors VALUES (7, 7);
+ INSERT INTO Films_Actors VALUES (8, 8);
+ INSERT INTO Films_Actors VALUES (9, 9);
+ INSERT INTO Films_Actors VALUES (10, 10);
+ INSERT INTO Films_Actors VALUES (11, 11);
+ INSERT INTO Films_Actors VALUES (12, 12);
+ INSERT INTO Films_Actors VALUES (13, 13);
+ INSERT INTO Films_Actors VALUES (14, 14);
+ INSERT INTO Films_Actors VALUES (15, 15);
+ INSERT INTO Films_Actors VALUES (1, 16);
+ INSERT INTO Films_Actors VALUES (2, 17);
+ INSERT INTO Films_Actors VALUES (3, 18);
+ INSERT INTO Films_Actors VALUES (4, 19);
+ INSERT INTO Films_Actors VALUES (5, 20);
+ INSERT INTO Films_Actors VALUES (6, 21);
+ INSERT INTO Films_Actors VALUES (7, 22);
+ INSERT INTO Films_Actors VALUES (8, 23);
+ INSERT INTO Films_Actors VALUES (9, 24);
+ INSERT INTO Films_Actors VALUES (10, 25);
+ INSERT INTO Films_Actors VALUES (11, 1);
+ INSERT INTO Films_Actors VALUES (12, 2);
+ INSERT INTO Films_Actors VALUES (13, 3);
+ INSERT INTO Films_Actors VALUES (14, 4);
+ INSERT INTO Films_Actors VALUES (15, 5);
+ INSERT INTO Films_Actors VALUES (1, 6);
+ INSERT INTO Films_Actors VALUES (2, 7);
+ INSERT INTO Films_Actors VALUES (3, 8);
+ INSERT INTO Films_Actors VALUES (4, 9);
+ INSERT INTO Films_Actors VALUES (5, 10);
+ INSERT INTO Films_Actors VALUES (6, 11);
+ INSERT INTO Films_Actors VALUES (7, 12);
+ INSERT INTO Films_Actors VALUES (8, 13);
+ INSERT INTO Films_Actors VALUES (9, 14);
+ INSERT INTO Films_Actors VALUES (10, 15);
+ INSERT INTO Films_Actors VALUES (11, 16);
+ INSERT INTO Films_Actors VALUES (12, 17);
+ INSERT INTO Films_Actors VALUES (13, 18);
+ INSERT INTO Films_Actors VALUES (14, 19);
+ INSERT INTO Films_Actors VALUES (15, 20);
