@@ -190,8 +190,8 @@ INSERT INTO Films_Ratings VALUES (1, 2, 7.4);
 INSERT INTO Films_Ratings VALUES (12, 8, 6.5); 
            
 CREATE TABLE Films_Actors(
-      Film_ID bigint REFERENCES Films,
-      Actor_ID bigint REFERENCES Persons,
+      Film_ID int REFERENCES Films,
+      Actor_ID int REFERENCES Persons,
 	  CONSTRAINT Films_Actors_Actor_ID_Films_ID_uq UNIQUE(Actor_ID, Film_ID)
       );
  INSERT INTO Films_Actors VALUES (1, 1);
