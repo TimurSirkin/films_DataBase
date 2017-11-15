@@ -128,7 +128,7 @@
  CREATE TABLE Films_Genres (
       Genre_ID int REFERENCES Films,
       Film_ID int REFERENCES Genres,
-	  CONSTRAINT Genres_Genre_ID_Films_ID_uq UNIQUE(Genre_ID, Film_ID)
+	  PRIMARY KEY (Film_ID, Genre_ID)
       );
               
  INSERT INTO Films_Genres VALUES (1, 1);
@@ -158,7 +158,7 @@ CREATE TABLE Films_Ratings(
       Film_ID int REFERENCES Films,
       Rating_Producer_ID int REFERENCES Rating_Producer,
       Rating real NOT NULL,
-	  CONSTRAINT Films_Ratings_Rating_Producer_ID_Films_ID_uq UNIQUE(Rating_Producer_ID, Film_ID),
+	  PRIMARY KEY (Film_ID, Rating_Producer_ID),
 	  CONSTRAINT Fims_Ratings_Rating_ck CHECK (Rating >=0 AND Rating <= 10)
       );
 INSERT INTO Films_Ratings VALUES (1, 9, 9.3);  
@@ -192,7 +192,7 @@ INSERT INTO Films_Ratings VALUES (12, 8, 6.5);
 CREATE TABLE Films_Actors(
       Film_ID int REFERENCES Films,
       Actor_ID int REFERENCES Persons,
-	  CONSTRAINT Films_Actors_Actor_ID_Films_ID_uq UNIQUE(Actor_ID, Film_ID)
+	  PRIMARY KEY (Film_ID, Actor_ID)
       );
  INSERT INTO Films_Actors VALUES (1, 1);
  INSERT INTO Films_Actors VALUES (2, 2);

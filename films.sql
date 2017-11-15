@@ -97,8 +97,8 @@ ALTER TABLE films OWNER TO postgres;
 --
 
 CREATE TABLE films_actors (
-    film_id bigint,
-    actor_id bigint
+    film_id integer,
+    actor_id integer
 );
 
 
