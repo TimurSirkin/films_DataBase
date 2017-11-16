@@ -1,41 +1,90 @@
-SELECT Name, Surname, Birthdate  
+﻿SELECT Name, Surname, Birthdate  
 FROM Persons
 WHERE Birthdate > now() - interval '40 years'
 Order BY Name, Surname;
-Вывожу Имя, Фамилию и дату рождения актеров, которым меньше 40 лет. Сортирую в алфавитном порядке, начиная с имени.
+
+Вывожу имя, фамилию и дату рождения актеров, которым меньше 40 лет. Сортирую в алфавитном порядке, начиная с имени.
 
 SELECT  Surname, Name 
 FROM Persons
 WHERE Sex = 'true' AND Country_ID = 1
 Order BY Surname, Name;
-Вывожу Имя и Фамилию актеров мужского пола из России. Сортирую в алфавитном порядке, начиная с фамилии.
+
+Вывожу имя и фамилию актеров мужского пола из России. Сортирую в алфавитном порядке, начиная с фамилии.
+
+
+
+
 
 SELECT   Name, Rental - Budget AS Profit 
 FROM Films
 WHERE Rental > Budget
 ORDER BY Profit;
+
 Вывожу название фильмов и их прибыль, при условии, что доход больше бюджета . Сортирую в порядке прибыли.
+
+
+
+
 
 SELECT Name, date_part('month',Premiere_Date) AS Month
 FROM Films
 WHERE date_part('month',Premiere_Date) > 8 AND date_part('month',Premiere_Date) < 12
 Order By date_part('month',Premiere_Date);
+
 Вывожу название фильмов и месяц их премьеры, при условии, что он вышел осенью. Сортирую в порядке месяцов.
 
+
+
+
+Вариант №1
 SELECT  p.Surname, p.Name, c.Name AS Country 
 FROM Persons p, Countries c
 WHERE p.Sex = 'false' AND c.ID = p.country_ID
 Order BY Surname, Name;
-Вывожу Имя, Фамилию и страну актров женского пола. Сортирую в алфавитном порядке, начиная с фамилии.
 
+Вариант №2
+SELECT  p.Surname, p.Name, c.Name AS Country 
+FROM Persons p INNER JOIN Countries c ON c.ID = p.country_ID
+WHERE p.Sex = 'false'
+Order BY Surname, Name;
+
+Вывожу имя, фамилию и страну актёров женского пола. Сортирую в алфавитном порядке, начиная с фамилии.
+
+
+
+
+
+Вариант №1
 SELECT  f.Name AS Film, p.Surname, p.Name
 FROM Persons p, Films f, Films_Actors fa
 WHERE  fa.Film_ID = f.ID AND fa.Actor_ID = p.ID AND f.Studio_ID = 1
 Order BY f.Name;
+
+Вариант №2
+SELECT Temp_Table.Name AS Film, p.Surname, p.Name
+FROM (SELECT *
+FROM Films_Actors fa INNER JOIN Films f ON fa.Film_ID = f.ID) AS Temp_Table INNER JOIN Persons p ON Temp_Table.Actor_ID = p.ID
+WHERE Temp_Table.Studio_ID = 1
+Order BY Temp_Table.Name;
+
 Вывожу название фильмов и имена с фамилиями актеров, которые в них снимались, при условии, что фильм снимала студия Castle Rock Entertainment. Сортирую в порядке названия фильмов.
 
+
+
+Вариант №1
 SELECT f.Name AS Films, rp.Name AS Rating_by, fr.Rating
 FROM Films f, Rating_Producer rp, Films_Ratings fr
 WHERE f.ID = fr.Film_ID AND rp.ID = fr.Rating_Producer_ID AND (fr.Rating > 8.5 OR f.Studio_ID = 1)
 ORDER BY -fr.Rating;
+
+Вариант №2
+SELECT Temp_Table.Name AS Films, rp.Name AS Rating_by, Temp_Table.Rating
+FROM (SELECT * 
+FROM Films f INNER JOIN Films_Ratings fr ON f.ID = fr.Film_ID) AS Temp_Table INNER JOIN Rating_Producer rp ON rp.ID = Temp_Table.Rating_Producer_ID
+WHERE Temp_Table.Rating > 8.5 OR Temp_Table.Studio_ID = 1
+ORDER BY -Temp_Table.Rating;
+
 Вывожу название фильмов, их рейтинг и название организации, которая оценивала его, при условии, что больше 8.5 баллов или же его снимала студия Castle Rock Entertainment. Сортирую в обратном порядке рейтинга.
+
+
