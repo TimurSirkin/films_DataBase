@@ -97,8 +97,8 @@ ALTER TABLE films OWNER TO postgres;
 --
 
 CREATE TABLE films_actors (
-    film_id integer,
-    actor_id integer
+    film_id integer NOT NULL,
+    actor_id integer NOT NULL
 );
 
 
@@ -109,8 +109,8 @@ ALTER TABLE films_actors OWNER TO postgres;
 --
 
 CREATE TABLE films_genres (
-    genre_id integer,
-    film_id integer
+    genre_id integer NOT NULL,
+    film_id integer NOT NULL
 );
 
 
@@ -142,8 +142,8 @@ ALTER SEQUENCE films_id_seq OWNED BY films.id;
 --
 
 CREATE TABLE films_ratings (
-    film_id integer,
-    rating_producer_id integer,
+    film_id integer NOT NULL,
+    rating_producer_id integer NOT NULL,
     rating real NOT NULL,
     CONSTRAINT fims_ratings_rating_ck CHECK (((rating >= (0)::double precision) AND (rating <= (10)::double precision)))
 );
@@ -634,11 +634,19 @@ ALTER TABLE ONLY countries
 
 
 --
--- Name: films_actors films_actors_actor_id_films_id_uq; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: films_actors films_actors_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY films_actors
-    ADD CONSTRAINT films_actors_actor_id_films_id_uq UNIQUE (actor_id, film_id);
+    ADD CONSTRAINT films_actors_pkey PRIMARY KEY (film_id, actor_id);
+
+
+--
+-- Name: films_genres films_genres_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY films_genres
+    ADD CONSTRAINT films_genres_pkey PRIMARY KEY (film_id, genre_id);
 
 
 --
@@ -650,19 +658,11 @@ ALTER TABLE ONLY films
 
 
 --
--- Name: films_ratings films_ratings_rating_producer_id_films_id_uq; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: films_ratings films_ratings_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY films_ratings
-    ADD CONSTRAINT films_ratings_rating_producer_id_films_id_uq UNIQUE (rating_producer_id, film_id);
-
-
---
--- Name: films_genres genres_genre_id_films_id_uq; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY films_genres
-    ADD CONSTRAINT genres_genre_id_films_id_uq UNIQUE (genre_id, film_id);
+    ADD CONSTRAINT films_ratings_pkey PRIMARY KEY (film_id, rating_producer_id);
 
 
 --
@@ -711,6 +711,111 @@ ALTER TABLE ONLY rating_producer
 
 ALTER TABLE ONLY studios
     ADD CONSTRAINT studios_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: countries_id_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX countries_id_index ON countries USING btree (id);
+
+
+--
+-- Name: films_actors_actor_id_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX films_actors_actor_id_index ON films_actors USING btree (actor_id);
+
+
+--
+-- Name: films_actors_film_id_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX films_actors_film_id_index ON films_actors USING btree (film_id);
+
+
+--
+-- Name: films_budget_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX films_budget_index ON films USING btree (budget);
+
+
+--
+-- Name: films_id_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX films_id_index ON films USING btree (id);
+
+
+--
+-- Name: films_premiere_date_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX films_premiere_date_index ON films USING btree (premiere_date);
+
+
+--
+-- Name: films_ratings_film_id_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX films_ratings_film_id_index ON films_ratings USING btree (film_id);
+
+
+--
+-- Name: films_ratings_rating_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX films_ratings_rating_index ON films_ratings USING btree (rating);
+
+
+--
+-- Name: films_rental_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX films_rental_index ON films USING btree (rental);
+
+
+--
+-- Name: films_studio_id_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX films_studio_id_index ON films USING btree (studio_id);
+
+
+--
+-- Name: persons_birthdate_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX persons_birthdate_index ON persons USING btree (birthdate);
+
+
+--
+-- Name: persons_country_id_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX persons_country_id_index ON persons USING btree (country_id);
+
+
+--
+-- Name: persons_id_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX persons_id_index ON persons USING btree (id);
+
+
+--
+-- Name: persons_sex_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX persons_sex_index ON persons USING btree (sex);
+
+
+--
+-- Name: rating_producer_id_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX rating_producer_id_index ON rating_producer USING btree (id);
 
 
 --

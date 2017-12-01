@@ -1,14 +1,31 @@
-﻿SELECT Name, Surname, Birthdate  
+﻿-ЛЕГКИЕ ЗАПРОСЫ
+
+
+SELECT Name, Surname, Birthdate  
 FROM Persons
 WHERE Birthdate > now() - interval '40 years'
 Order BY Name, Surname;
 
+CREATE INDEX Persons_Birthdate_index ON Persons(Birthdate);
+
+Время планирования увеличилось, время извлечения уменьшилось, общее время выполнения увеличилось.
+
 Вывожу имя, фамилию и дату рождения актеров, которым меньше 40 лет. Сортирую в алфавитном порядке, начиная с имени.
+
+
+
+
+
 
 SELECT  Surname, Name 
 FROM Persons
 WHERE Sex = 'true' AND Country_ID = 1
 Order BY Surname, Name;
+
+CREATE INDEX Persons_Sex_index ON Persons(Sex);
+CREATE INDEX Persons_Country_ID_index ON Persons(Country_ID);
+
+Время планирования увеличилось, время извлечения увеличилось, общее время выполнения увеличилось.
 
 Вывожу имя и фамилию актеров мужского пола из России. Сортирую в алфавитном порядке, начиная с фамилии.
 
@@ -21,6 +38,11 @@ FROM Films
 WHERE Rental > Budget
 ORDER BY Profit;
 
+CREATE INDEX Films_Rental_index ON Films(Rental);
+CREATE INDEX Films_Budget_index ON Films(Budget);
+
+Время планирования увеличилось, время извлечения уменьшилось, общее время выполнения увеличилось.
+
 Вывожу название фильмов и их прибыль, при условии, что доход больше бюджета . Сортирую в порядке прибыли.
 
 
@@ -32,10 +54,16 @@ FROM Films
 WHERE date_part('month',Premiere_Date) > 8 AND date_part('month',Premiere_Date) < 12
 Order By date_part('month',Premiere_Date);
 
+CREATE INDEX Films_Premiere_Date_index ON Films(Premiere_Date);
+
+Время планирования увеличилось, время извлечения увеличилось, общее время выполнения увеличилось.
+
 Вывожу название фильмов и месяц их премьеры, при условии, что он вышел осенью. Сортирую в порядке месяцов.
 
 
 
+
+-СРЕДНИЕ ЗАПРОСЫ
 
 Вариант №1
 SELECT  p.Surname, p.Name, c.Name AS Country 
@@ -48,6 +76,12 @@ SELECT  p.Surname, p.Name, c.Name AS Country
 FROM Persons p INNER JOIN Countries c ON c.ID = p.country_ID
 WHERE p.Sex = 'false'
 Order BY Surname, Name;
+
+CREATE INDEX Countries_ID_index ON Countries(ID);
+CREATE INDEX Persons_Country_ID_index ON Persons(Country_ID);(Создано выше)
+CREATE INDEX Persons_Sex_index ON Persons(Sex);(Создано выше)
+
+Время планирования уменьшилось, время извлечения уменьшилось, общее время выполнения уменьшилось.
 
 Вывожу имя, фамилию и страну актёров женского пола. Сортирую в алфавитном порядке, начиная с фамилии.
 
@@ -68,6 +102,14 @@ FROM Films_Actors fa INNER JOIN Films f ON fa.Film_ID = f.ID) AS Temp_Table INNE
 WHERE Temp_Table.Studio_ID = 1
 Order BY Temp_Table.Name;
 
+CREATE INDEX Films_Actors_Film_ID_index ON Films_Actors(Film_ID);
+CREATE INDEX Films_ID_index ON Films(ID);
+CREATE INDEX Films_Actors_Actor_ID_index ON Films_Actors(Actor_ID);
+CREATE INDEX Persons_ID_index ON Persons(ID);
+CREATE INDEX Films_Studio_ID_index ON Films(Studio_ID);
+
+Время планирования уменьшилось, время извлечения уменьшилось, общее время выполнения уменьшилось.
+
 Вывожу название фильмов и имена с фамилиями актеров, которые в них снимались, при условии, что фильм снимала студия Castle Rock Entertainment. Сортирую в порядке названия фильмов.
 
 
@@ -79,12 +121,81 @@ WHERE f.ID = fr.Film_ID AND rp.ID = fr.Rating_Producer_ID AND (fr.Rating > 8.5 O
 ORDER BY -fr.Rating;
 
 Вариант №2
+EXPLAIN(ANALYZE)
 SELECT Temp_Table.Name AS Films, rp.Name AS Rating_by, Temp_Table.Rating
 FROM (SELECT * 
 FROM Films f INNER JOIN Films_Ratings fr ON f.ID = fr.Film_ID) AS Temp_Table INNER JOIN Rating_Producer rp ON rp.ID = Temp_Table.Rating_Producer_ID
 WHERE Temp_Table.Rating > 8.5 OR Temp_Table.Studio_ID = 1
 ORDER BY -Temp_Table.Rating;
 
+CREATE INDEX Films_ID_index ON Films(ID);(Cоздано выше)
+CREATE INDEX Films_Ratings_Film_ID_index ON Films_Ratings(Film_ID);
+CREATE INDEX Rating_Producer_ID_index ON Rating_Producer(ID);
+CREATE INDEX Films_Ratings_Rating_index ON Films_Ratings(Rating);
+CREATE INDEX Films_Studio_ID_index ON Films(Studio_ID);(Cоздано выше)
+
+Время планирования увеличилось, время извлечения уменьшилось, общее время выполнения увеличилось.
+
 Вывожу название фильмов, их рейтинг и название организации, которая оценивала его, при условии, что больше 8.5 баллов или же его снимала студия Castle Rock Entertainment. Сортирую в обратном порядке рейтинга.
+
+
+
+
+-СЛОЖНЫЕ ЗАПРОСЫ
+
+
+SELECT f.Name, count(f.ID) AS Actors_count
+FROM Films f
+INNER JOIN Films_Actors fa
+ON (fa.Film_ID = f.ID)
+INNER JOIN Persons p
+ON (fa.Actor_ID = p.ID)
+WHERE p.Birthdate > now() - interval '40 years'
+GROUP BY f.ID;
+
+Вывожу названия фильмов и кол-во актеров, которые в них снимаются, при условии, что они не из России или США.
+
+
+
+SELECT f.Name, count(f.ID) AS Actors_count
+FROM Films f
+INNER JOIN Films_Actors fa
+ON (fa.Film_ID = f.ID)
+INNER JOIN Persons p
+ON (fa.Actor_ID = p.ID)
+WHERE (EXTRACT(YEAR FROM now()::date) - EXTRACT(YEAR FROM Birthdate)) >(SELECT AVG(EXTRACT(YEAR FROM now()::date) - EXTRACT(YEAR FROM Birthdate)) 
+FROM Persons)
+GROUP BY f.ID;
+
+Вывожу названия фильмов и кол-во актеров, которые в них снимаются, при условии, что их возраст больше среднего(Предпологается, что все актеры занесенные в БД до сих пор живы).
+
+
+
+SELECT s.Name, sum(f.Rental) AS Total_Rental, avg(f.Rental) AS Average_Rental, count(f.ID) AS Films_count 
+FROM Studios s
+INNER JOIN Films f
+ON (f.Studio_ID = s.ID)
+WHERE s.Country_ID = 2
+GROUP BY (s.Name);
+
+Вывожу названия студий и кол-во фильмов, которые они сняли, средние сборы за фильм и общие сборы, при условии, что студия создана в США.
+
+SELECT f.Name AS Film, max(fr.Rating) AS Max_Rating
+FROM  Films f 
+INNER JOIN Films_Ratings fr 
+ON f.ID = fr.Film_ID
+INNER JOIN Rating_Producer rp 
+ON rp.ID = fr.Rating_Producer_ID
+WHERE fr.Rating > (SELECT avg(fr.Rating) FROM Films_Ratings fr)
+GROUP BY f.Name;
+
+Вывожу названия фильмов и их максимальный рейтинг, при условии, что он выше среднего.
+
+
+
+
+
+
+
 
 
